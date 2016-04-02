@@ -5,7 +5,7 @@
 
 ### Environment variables
 
-All options available as command-line options can be passed in as environment variables.
+All options available in shell can be passed in as environment variables.
 
 Environment variable | Description
 -------------------- | -----------
