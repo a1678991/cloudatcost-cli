@@ -16,5 +16,5 @@ OPETYPE              | Operation type ex. b,r,
 -------------------- | -----------
 OS                   | Operating system ex. 9,14,42
 CPU                  |CPU size
-RAM                  |RAM size
-Storage              |Storage size
+RAM                  |RAM size (MB)
+Storage              |Storage size (GB)
