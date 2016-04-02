@@ -1,7 +1,7 @@
 # cloudatcost-cli
-bash based cloudatcost api client
+##bash based cloudatcost api client
 
-##Rquie jq(https://stedolan.github.io/jq/)
+###Rquie jq(https://stedolan.github.io/jq/)
 
 ### Environment variables
 
