@@ -14,7 +14,7 @@ KEY                  | API key
 -------------------- | -----------
 OPETYPE              | Operation type ex. b,r, 
 -------------------- | -----------
-OS                   | Operating system ex. 9(Windows 7 64bit),14,42
+OS                   | Operating system ex. 9,14,42
 CPU                  |CPU size
 RAM                  |RAM size
 Storage              |Storage size
