@@ -44,8 +44,8 @@ if [ $OPETYPE = "b" ] || [ $OPETYPE = "B" ]; then
     fi
     if [ -z "$STORAGE" ]; then
             echo "TotalSSD: $TOTAL_STORAGE GB UsedSSD: $USED_STORAGE GB AvailableSSD: $AVAILABLE_STORAGE GB"
-            echo -n "Enter SSD (GB) :"
-            read SSD
+            echo -n "Enter Storage (GB) :"
+            read STRAGE
     fi
 
     curl -k -s -X POST https://panel.cloudatcost.com/api/v1/cloudpro/build.php --data "key=$KEY&login=$MAIL&cpu=$CPU&ram=$RAM&storage=$STORAGE&os=$OS" |jq .
