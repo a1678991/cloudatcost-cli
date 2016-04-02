@@ -21,10 +21,10 @@ get_resources () {
 }
 
 if [ -z "$OPETYPE" ]; then
-        echo -n "Choose oepration [C]reate/[L]istserver/[D]eleteserver(not yet)/check[R]esources:"
+        echo -n "Choose oepration [B]uild/[L]istserver/[D]eleteserver(not yet)/check[R]esources:"
         read OPETYPE
 fi
-if [ $OPETYPE = "c" ] || [ $OPETYPE = "C" ]; then
+if [ $OPETYPE = "c" ] || [ $OPETYPE = "B" ]; then
         if [ -z "$OS" ]; then
                 echo "OS List"
                 curl -k -s "https://panel.cloudatcost.com/api/v1/listtemplates.php?key=$KEY&login=$MAIL" |jq .data[] | jq -r  '{(.ce_id): .name}' |grep ":"
