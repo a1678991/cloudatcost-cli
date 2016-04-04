@@ -18,3 +18,10 @@ OS                   | Operating system ex. 9,14,42
 CPU                  |CPU size
 RAM                  |RAM size (MB)
 STORAGE              |Storage size (GB)
+
+
+
+
+
+ドキュメントちゃんと作りやがれ！
+書いてあるのと帰ってくる変数も違うし何故かドキュメントの方だけラップされてたりするしexampleのコマンドじゃapi使えない
