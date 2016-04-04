@@ -21,14 +21,14 @@ get_resources () {
 }
 
 if [ -z "$OPETYPE" ]; then
-	echo -n "Choose oepration [B]uild/[L]istserver/[D]eleteserver(not yet)/check[R]esources:/Run[M]ode :"
+	echo -n "Choose oepration [B]uild/[L]istserver/[D]eleteserver/check[R]esources:/Run[M]ode :"
 	read OPETYPE
 fi
 if [ $OPETYPE = "b" ] || [ $OPETYPE = "B" ]; then
 	if [ -z "$OS" ]; then
 		echo "OS List"
-		curl -k -s "https://panel.cloudatcost.com/api/v1/listtemplates.php?key=$KEY&login=$MAIL" |jq .data[] | jq -r  '{(.ce_id): .name}' |grep ":"
-		echo -n "Enter OS number:"
+		curl -k -s "https://panel.cloudatcost.com/api/v1/listtemplates.php?key=$KEY&login=$MAIL" |jq -r '.data[] | {ID: .ce_id, Detail: .name}'
+		echo -n "Enter OS ID:"
 		read OS
 	fi
 	get_resources
@@ -52,10 +52,23 @@ if [ $OPETYPE = "b" ] || [ $OPETYPE = "B" ]; then
   
   
 elif [ $OPETYPE = "l" ] || [ $OPETYPE = "L" ]; then
-	SERVERLIST=`curl -k -s -X GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL"`
-	echo `echo $SERVERLIST | jq '.data[] | {SID: .sid, name: .servername, ip: .ip, OS: .template}'`
+	curl -k -s -X GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL" | jq '.data[] | {SID: .sid, name: .servername, Mode: .mode, IP: .ip, OS: .template, Status: .status}'
 elif [ $OPETYPE = "d" ] || [ $OPETYPE = "D" ]; then
-    echo "Creating..."
+	if [ -z "$SID" ]; then	
+		echo "Server List"
+		curl -k -s -X GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL" | jq '.data[] | {SID: .sid, name: .servername, Mode: .mode, IP: .ip, OS: .template, Status: .status}'
+		echo -n "Enter server SID :"
+		read SID
+	fi
+	if [ -z "$CONFIRM" ]; then
+		echo "Really delete this server ?"
+		echo "SID: $SID"
+		echo -n "Y/N :"
+		read CONFIRM
+	fi
+	if [ $CONFIRM = "y" ] || [ $CONFIRM = "Y" ]; then
+		curl -k -s -X PUT https://panel.cloudatcost.com/api/v1/cloudpro/delete.php --data "key=$KEY&login=$MAIL&sid=$SID"
+	fi
 elif [ $OPETYPE = "r" ] || [ $OPETYPE = "R" ]; then
 	get_resources
 	echo "TotalCPU: $TOTAL_CPU UsedCPU: $USED_CPU AvailableCPU: $AVAILABLE_CPU"
@@ -63,17 +76,16 @@ elif [ $OPETYPE = "r" ] || [ $OPETYPE = "R" ]; then
 	echo "TotalSSD: $TOTAL_STORAGE GB UsedSSD: $USED_STORAGE GB AvailableSSD: $AVAILABLE_STORAGE GB"
 elif [ $OPETYPE = "m" ] || [ $OPETYPE = "M" ]; then
 	if [ -z "$SID" ]; then
-	if [ -z "$MODE" ]; then
 		echo "Server List"
-		SERVERLIST=`curl -k -s -X GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL"`
-		echo `echo $SERVERLIST | jq '.data[] | {SID: .sid, name: .servername, ip: .ip, OS: .template}'`
-		echo -n "Enter server SID:"
+		curl -k -s -X GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL" | jq '.data[] | {SID: .sid, name: .servername, Mode: .mode, IP: .ip, OS: .template, Status: .status}'
+		echo -n "Enter server SID :"
 		read SID
+	fi
+	if [ -z "$MODE" ]; then
 		echo -n "Enter mode [normal/safe] :"
 		read MODE
 	fi
-	fi
-	curl -X PUT https://panel.cloudatcost.com/api/v1/runmode.php --data "key=$KEY&login=$MAIL&sid=$SID&mode=$MODE"
+	curl -k -s -X PUT https://panel.cloudatcost.com/api/v1/runmode.php --data "key=$KEY&login=$MAIL&sid=$SID&mode=$MODE"
 fi
   
 else
