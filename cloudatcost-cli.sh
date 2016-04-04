@@ -69,8 +69,7 @@ elif [ $OPETYPE = "m" ] || [ $OPETYPE = "M" ]; then
 		echo `echo $SERVERLIST | jq '.data[] | {SID: .sid, name: .servername, ip: .ip, OS: .template}'`
 		echo -n "Enter server SID:"
 		read SID
-		echo  "normal / safe"
-		echo -n "Enter mode:"
+		echo -n "Enter mode [normal/safe] :"
 		read MODE
 	fi
 	fi
