@@ -62,15 +62,19 @@ elif [ $OPETYPE = "r" ] || [ $OPETYPE = "R" ]; then
 	echo "TotalRAM: $TOTAL_RAM MB UsedRAM: $USED_RAM MB AvailableRAM: $AVAILABLE_RAM MB"
 	echo "TotalSSD: $TOTAL_STORAGE GB UsedSSD: $USED_STORAGE GB AvailableSSD: $AVAILABLE_STORAGE GB"
 elif [ $OPETYPE = "m" ] || [ $OPETYPE = "M" ]; then
-	echo "Server List"
-	SERVERLIST=`curl -k -s -X GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL"`
-	echo `echo $SERVERLIST | jq '.data[] | {SID: .sid, name: .servername, ip: .ip, OS: .template}'`
-	echo -n "Enter server SID:"
-	read SID
-	echo -n "normal / safe"
-	echo -n "Enter mode:"
-	read MODE
-	curl -X PUT https://panel.cloudatcost.com/api/v1/runmode.php --data "key=$KEY&login=$MAIL&$sid=$SID&mode=$MODE"
+	if [ -z "$SID" ]; then
+	if [ -z "$MODE" ]; then
+		echo "Server List"
+		SERVERLIST=`curl -k -s -X GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL"`
+		echo `echo $SERVERLIST | jq '.data[] | {SID: .sid, name: .servername, ip: .ip, OS: .template}'`
+		echo -n "Enter server SID:"
+		read SID
+		echo  "normal / safe"
+		echo -n "Enter mode:"
+		read MODE
+	fi
+	fi
+	curl -X PUT https://panel.cloudatcost.com/api/v1/runmode.php --data "key=$KEY&login=$MAIL&sid=$SID&mode=$MODE"
 fi
   
 else
