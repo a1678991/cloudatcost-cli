@@ -52,7 +52,7 @@ if [ $OPETYPE = "b" ] || [ $OPETYPE = "B" ]; then
 
 
 elif [ $OPETYPE = "l" ] || [ $OPETYPE = "L" ]; then
-    curl -k -s GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL" | jq .data | jq '{(.servername): .ip}, .rootpass, .cpuusage, .ramusage, .hdusage'
+    curl -k -s GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL" | jq .data
 elif [ $OPETYPE = "d" ] || [ $OPETYPE = "D" ]; then
     echo "Creating..."
 elif [ $OPETYPE = "r" ] || [ $OPETYPE = "R" ]; then
