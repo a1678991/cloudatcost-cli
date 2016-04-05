@@ -3,6 +3,8 @@
 
 ### Require jq(https://stedolan.github.io/jq/)
 
+Package will be available in major distribution
+
 ### Environment variables
 
 All options available in shell can be passed in as environment variables.
