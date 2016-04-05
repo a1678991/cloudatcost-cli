@@ -85,7 +85,7 @@ elif [ $OPETYPE = "m" ] || [ $OPETYPE = "M" ]; then
 		echo -n "Enter mode [normal/safe] :"
 		read MODE
 	fi
-	curl -k -s -X PUT https://panel.cloudatcost.com/api/v1/runmode.php --data "key=$KEY&login=$MAIL&sid=$SID&mode=$MODE"
+	curl -k -s -X POST https://panel.cloudatcost.com/api/v1/runmode.php --data "key=$KEY&login=$MAIL&sid=$SID&mode=$MODE" | jq
 fi
   
 else
