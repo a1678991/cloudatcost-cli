@@ -67,7 +67,7 @@ elif [ $OPETYPE = "d" ] || [ $OPETYPE = "D" ]; then
 		read CONFIRM
 	fi
 	if [ $CONFIRM = "y" ] || [ $CONFIRM = "Y" ]; then
-		curl -k -s -X PUT https://panel.cloudatcost.com/api/v1/cloudpro/delete.php --data "key=$KEY&login=$MAIL&sid=$SID"
+		curl -k -s -X POST https://panel.cloudatcost.com/api/v1/cloudpro/delete.php --data "key=$KEY&login=$MAIL&sid=$SID" | jq
 	fi
 elif [ $OPETYPE = "r" ] || [ $OPETYPE = "R" ]; then
 	get_resources
