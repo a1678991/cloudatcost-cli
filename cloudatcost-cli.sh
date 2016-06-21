@@ -1,8 +1,13 @@
 #!/bin/bash
 # !!!! set MAIL and KEY !!!!
-MAIL=
-KEY=
 
+MAIL="none"
+KEY="none"
+
+if [ $MAIL = "none" ] || [ $KEY = "none" ]; then
+	echo "Please set MAIL and KEY!!"
+	exit
+fi
 if which jq >/dev/null 2>&1; then
 
 get_resources () {
@@ -52,7 +57,7 @@ if [ $OPETYPE = "b" ] || [ $OPETYPE = "B" ]; then
   
   
 elif [ $OPETYPE = "l" ] || [ $OPETYPE = "L" ]; then
-	curl -k -s -X GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL" | jq '.data[] | {SID: .sid, name: .servername, Mode: .mode, IP: .ip, OS: .template, Status: .status}'
+	curl -k -s -X GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL" | jq '.data[] | {SID: .sid, name: .servername, Mode: .mode, IP: .ip, OS: .template, Status: .status, Pass: .rootpass, Host: .hostname}'
 elif [ $OPETYPE = "d" ] || [ $OPETYPE = "D" ]; then
 	if [ -z "$SID" ]; then	
 		echo "Server List"
