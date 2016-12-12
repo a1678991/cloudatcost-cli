@@ -42,8 +42,7 @@ show_resources () {
         echo "TotalSSD: $TOTAL_STORAGE GB UsedSSD: $USED_STORAGE GB AvailableSSD: $AVAILABLE_STORAGE GB"
 }
 select_server() {
-                echo "Server List"
-                curl -k -s -X GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL" | jq '.data[] | {SID: .sid, name: .servername, Mode: .mode, IP: .ip, OS: .template, Status: .status}'
+		list_servers
                 echo -n "Enter server SID :"
                 read SID
 }
