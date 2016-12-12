@@ -1,9 +1,7 @@
 #!/bin/bash
 # !!!! set MAIL and KEY !!!!
-MAIL=""
-KEY=""
 
-if [ $MAIL = "none" ] || [ $KEY = "none" ]; then
+if [ -z "$MAIL" ] || [ -z "$KEY" ]; then
         echo "Please set MAIL and KEY!!"
         exit
 fi
@@ -48,23 +46,23 @@ select_server() {
 }
 
 #option
-while getopts :m:k:l:r:h opt
-do
-    case $opt in
-        m)      MAIL=$OPTARG
-                ;;
-        k)      KEY=$OPTARG
-                ;;
-        l)      list_servers && exit 0
-                ;;
-        r)      show_resources && exit 0
-                ;;
-        h)      show_usage
-                ;;
-        \?)     show_usage
-                ;;
-        esac
-done
+#while getopts :m:k:l:r:h opt
+#do
+#    case $opt in
+#        m)      MAIL=$OPTARG
+#                ;;
+#        k)      KEY=$OPTARG
+#                ;;
+#        l)      list_servers && exit 0
+#                ;;
+#        r)      show_resources && exit 0
+#                ;;
+#        h)      show_usage
+#                ;;
+#        \?)     show_usage
+#                ;;
+#        esac
+#done
 
 if [ -z "$OPETYPE" ]; then
 	echo -n "Choose oepration [B]uild/[L]istserver/[D]eleteserver/check[R]esources:/Run[M]ode/Enter[C]onsole :"
