@@ -21,4 +21,4 @@ CPU                  |CPU size
 RAM                  |RAM size (MB)
 STORAGE              |Storage size (GB)
 
-consoleはちゃんとAPIが返事してくれないので動きません
+consoleはAPIがちゃんと返事してくれないので動きません
