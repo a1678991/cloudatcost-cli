@@ -1,5 +1,5 @@
 #!/bin/bash
-# !!!! set MAIL and KEY !!!!
+# !!!! set $MAIL and $KEY !!!!
 
 if [ -z "$MAIL" ] || [ -z "$KEY" ]; then
         echo "Please set MAIL and KEY!!"
@@ -7,17 +7,29 @@ if [ -z "$MAIL" ] || [ -z "$KEY" ]; then
 fi
 if which jq >/dev/null 2>&1; then
 
-show_usage ()
+check_response ()
 {
-    echo "Usage:"
-    echo "  -m MailAdress"
-    echo "  -k api key"
-    echo "  -l list servers"
-    echo "  -r show resouces"
-    exit 1
+	STATUS=`echo $RESPONSE | jq .status`
+	if [ "$STATUS" == "error" ]; then
+		DESCRIPTION=`echo $RETURN | jq .error_description`
+		echo "Error occurred."
+		echo "$DESCRIPTION"
+		exit 1
+	fi
 }
+#show_usage ()
+#{
+#    echo "Usage:"
+#    echo "  -m MailAdress"
+#    echo "  -k api key"
+#    echo "  -l list servers"
+#    echo "  -r show resouces"
+#    exit 1
+#}
 get_resources () {
-	RESOURCES=`curl -k -s "https://panel.cloudatcost.com/api/v1/cloudpro/resources.php?key=$KEY&login=$MAIL" | jq .data`
+	RESPONSE=`curl -k -s "https://panel.cloudatcost.com/api/v1/cloudpro/resources.php?key=$KEY&login=$MAIL"`
+	check_response
+	RESOURCES=`echo $RESPONSE | jq .data`
 	TOTAL=`echo $RESOURCES | jq .total`
 	USED=`echo $RESOURCES | jq .used`
 	TOTAL_CPU=`echo $TOTAL | jq -r .cpu_total`
@@ -31,7 +43,10 @@ get_resources () {
 	AVAILABLE_STORAGE=`expr $TOTAL_STORAGE - $USED_STORAGE`
 }
 list_servers () {
-curl -k -s -X GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL" | jq '.data[] | {SID: .sid, name: .servername, Mode: .mode, IP: .ip, OS: .template, Status: .status, Pass: .rootpass, Host: .hostname}'
+	RESPONSE=`curl -k -s -X GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL"`
+	check_response
+	echo $RESPONSE | jq '.data[] | {SID: .sid, name: .servername, Mode: .mode, IP: .ip, OS: .template, Status: .status, Pass: .rootpass, Host: .hostname}'
+
 }
 show_resources () {
         get_resources
@@ -40,9 +55,9 @@ show_resources () {
         echo "TotalSSD: $TOTAL_STORAGE GB UsedSSD: $USED_STORAGE GB AvailableSSD: $AVAILABLE_STORAGE GB"
 }
 select_server() {
-		list_servers
-                echo -n "Enter server SID :"
-                read SID
+	list_servers
+	echo -n "Enter server SID :"
+	read SID
 }
 
 #option
@@ -71,7 +86,9 @@ fi
 if [ $OPETYPE = "b" ] || [ $OPETYPE = "B" ]; then
 	if [ -z "$OS" ]; then
 		echo "OS List"
-		curl -k -s "https://panel.cloudatcost.com/api/v1/listtemplates.php?key=$KEY&login=$MAIL" |jq -r '.data[] | {ID: .ce_id, Detail: .name}'
+		RESPONSE=`curl -k -s "https://panel.cloudatcost.com/api/v1/listtemplates.php?key=$KEY&login=$MAIL"`
+		check_response
+		echo $RESPONSE |jq -r '.data[] | {ID: .ce_id, Detail: .name}'
 		echo -n "Enter OS ID:"
 		read OS
 	fi
@@ -92,7 +109,9 @@ if [ $OPETYPE = "b" ] || [ $OPETYPE = "B" ]; then
 		read STORAGE
 	fi
 
-	curl -k -s -X POST https://panel.cloudatcost.com/api/v1/cloudpro/build.php --data "key=$KEY&login=$MAIL&cpu=$CPU&ram=$RAM&storage=$STORAGE&os=$OS" |jq .
+	RESPONSE=`curl -k -s -X POST https://panel.cloudatcost.com/api/v1/cloudpro/build.php --data "key=$KEY&login=$MAIL&cpu=$CPU&ram=$RAM&storage=$STORAGE&os=$OS"`
+	check_status
+	echo $RESPONSE | jq .
 
 elif [ $OPETYPE = "l" ] || [ $OPETYPE = "L" ]; then
 	list_servers
@@ -105,7 +124,8 @@ elif [ $OPETYPE = "d" ] || [ $OPETYPE = "D" ]; then
 		read CONFIRM
 	fi
 	if [ $CONFIRM = "y" ] || [ $CONFIRM = "Y" ]; then
-		curl -k -s -X POST https://panel.cloudatcost.com/api/v1/cloudpro/delete.php --data "key=$KEY&login=$MAIL&sid=$SID" | jq
+		RESPONSE=`curl -k -s -X POST https://panel.cloudatcost.com/api/v1/cloudpro/delete.php --data "key=$KEY&login=$MAIL&sid=$SID"`
+		echo $RESPONSE | jq
 	fi
 elif [ $OPETYPE = "r" ] || [ $OPETYPE = "R" ]; then
 	show_resources
@@ -115,10 +135,13 @@ elif [ $OPETYPE = "m" ] || [ $OPETYPE = "M" ]; then
 		echo -n "Enter mode [normal/safe] :"
 		read MODE
 	fi
-	curl -k -s -X POST https://panel.cloudatcost.com/api/v1/runmode.php --data "key=$KEY&login=$MAIL&sid=$SID&mode=$MODE" | jq
+	RESPONSE=`curl -k -s -X POST https://panel.cloudatcost.com/api/v1/runmode.php --data "key=$KEY&login=$MAIL&sid=$SID&mode=$MODE"`
+	echo $RESPONSE | jq
 elif [ $OPETYPE = "c" ] || [ $OPETYPE = "C" ]; then
 	select_server
-	curl -k -X POST https://panel.cloudatcost.com/api/v1/console.php --data "key=$KEY&login=$MAIL&sid=$SID"
+	RESPONSE=`curl -k -X POST https://panel.cloudatcost.com/api/v1/console.php --data "key=$KEY&login=$MAIL&sid=$SID"`
+	check_response
+	echo $RESPONSE | jq .
 fi
 
 
