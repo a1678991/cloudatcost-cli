@@ -10,7 +10,7 @@ if which jq >/dev/null 2>&1; then
 check_response ()
 {
 	STATUS=`echo $RESPONSE | jq .status`
-	if [ $STATUS != "ok" ]; then
+	if [ $STATUS = "error" ]; then
 		echo "Error occurred."
 		echo $RESPONSE | jq .error_description
 		exit 1
@@ -29,7 +29,7 @@ check_response ()
 #    exit 1
 #}
 get_resources () {
-	RESPONSE=`curl -k -s "https://panel.cloudatcost.com/api/v1/cloudpro/resources.php?key=$KEY&login=$MAIL"`
+	RESPONSE=`curl -k -s "https://panel.cloudatcost.com/api/v1/cloudpro/resources.php?key=$KEY&login=$MAIL&ip_bypass=1"`
 	check_response
 	RESOURCES=`echo $RESPONSE | jq .data`
 	TOTAL=`echo $RESOURCES | jq .total`
@@ -45,7 +45,7 @@ get_resources () {
 	AVAILABLE_STORAGE=`expr $TOTAL_STORAGE - $USED_STORAGE`
 }
 list_servers () {
-	RESPONSE=`curl -k -s -X GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL"`
+	RESPONSE=`curl -k -s -X GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL&ip_bypass=1"`
 	check_response
 	echo $RESPONSE | jq '.data[] | {SID: .sid, name: .servername, Mode: .mode, IP: .ip, OS: .template, Status: .status, Pass: .rootpass, Host: .hostname}'
 
@@ -88,7 +88,7 @@ fi
 if [ $OPETYPE = "b" ] || [ $OPETYPE = "B" ]; then
 	if [ -z "$OS" ]; then
 		echo "OS List"
-		RESPONSE=`curl -k -s "https://panel.cloudatcost.com/api/v1/listtemplates.php?key=$KEY&login=$MAIL"`
+		RESPONSE=`curl -k -s "https://panel.cloudatcost.com/api/v1/listtemplates.php?key=$KEY&login=$MAIL&ip_bypass=1"`
 		check_response
 		echo $RESPONSE |jq -r '.data[] | {ID: .ce_id, Detail: .name}'
 		echo -n "Enter OS ID:"
@@ -111,7 +111,7 @@ if [ $OPETYPE = "b" ] || [ $OPETYPE = "B" ]; then
 		read STORAGE
 	fi
 
-	RESPONSE=`curl -k -s -X POST https://panel.cloudatcost.com/api/v1/cloudpro/build.php --data "key=$KEY&login=$MAIL&cpu=$CPU&ram=$RAM&storage=$STORAGE&os=$OS"`
+	RESPONSE=`curl -k -s -X POST https://panel.cloudatcost.com/api/v1/cloudpro/build.php --data "key=$KEY&login=$MAIL&cpu=$CPU&ram=$RAM&storage=$STORAGE&os=$OS&ip_bypass=1"`
 	check_status
 	echo $RESPONSE | jq .
 
@@ -126,7 +126,7 @@ elif [ $OPETYPE = "d" ] || [ $OPETYPE = "D" ]; then
 		read CONFIRM
 	fi
 	if [ $CONFIRM = "y" ] || [ $CONFIRM = "Y" ]; then
-		RESPONSE=`curl -k -s -X POST https://panel.cloudatcost.com/api/v1/cloudpro/delete.php --data "key=$KEY&login=$MAIL&sid=$SID"`
+		RESPONSE=`curl -k -s -X POST https://panel.cloudatcost.com/api/v1/cloudpro/delete.php --data "key=$KEY&login=$MAIL&sid=$SID&ip_bypass=1"`
 		echo $RESPONSE | jq
 	fi
 elif [ $OPETYPE = "r" ] || [ $OPETYPE = "R" ]; then
@@ -137,11 +137,11 @@ elif [ $OPETYPE = "m" ] || [ $OPETYPE = "M" ]; then
 		echo -n "Enter mode [normal/safe] :"
 		read MODE
 	fi
-	RESPONSE=`curl -k -s -X POST https://panel.cloudatcost.com/api/v1/runmode.php --data "key=$KEY&login=$MAIL&sid=$SID&mode=$MODE"`
+	RESPONSE=`curl -k -s -X POST https://panel.cloudatcost.com/api/v1/runmode.php --data "key=$KEY&login=$MAIL&sid=$SID&mode=$MODE&ip_bypass=1"`
 	echo $RESPONSE | jq
 elif [ $OPETYPE = "c" ] || [ $OPETYPE = "C" ]; then
 	select_server
-	RESPONSE=`curl -k -X POST https://panel.cloudatcost.com/api/v1/console.php --data "key=$KEY&login=$MAIL&sid=$SID"`
+	RESPONSE=`curl -k -X POST https://panel.cloudatcost.com/api/v1/console.php --data "key=$KEY&login=$MAIL&sid=$SID&ip_bypass=1"`
 	check_response
 	echo $RESPONSE | jq .
 fi
