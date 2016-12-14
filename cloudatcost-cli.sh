@@ -10,7 +10,12 @@ if which jq >/dev/null 2>&1; then
 check_response ()
 {
 	echo "What are you?"
+	echo "↓↓↓"
+	echo $RESPONSE
+	echo "↑↑↑"
 	STATUS=`echo $RESPONSE | jq .status`
+	echo "and ..."
+	echo "$STATUS"
 	if [ $STATUS = "error" ]; then
 		echo "Hello!!"
 		DESCRIPTION=`echo $RETURN | jq .error_description`
