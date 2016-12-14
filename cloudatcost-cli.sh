@@ -10,10 +10,9 @@ if which jq >/dev/null 2>&1; then
 check_response ()
 {
 	STATUS=`echo $RESPONSE | jq .status`
-	echo "$STATUS"
 	if [ $STATUS != "ok" ]; then
 		echo "Error occurred."
-		echo "$RETURN"
+		echo $RESPONSE | jq .error_description
 		exit 1
 	fi
 	if [ $? -ne 0 ]; then
