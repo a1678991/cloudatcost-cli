@@ -9,23 +9,14 @@ if which jq >/dev/null 2>&1; then
 
 check_response ()
 {
-	echo "What are you?"
-	echo "↓↓↓"
-	echo $RESPONSE
-	echo "↑↑↑"
 	STATUS=`echo $RESPONSE | jq .status`
-	echo "and ..."
 	echo "$STATUS"
-	if [ $STATUS = "error" ]; then
-		echo "Hello!!"
-		DESCRIPTION=`echo $RETURN | jq .error_description`
+	if [ $STATUS != "ok" ]; then
 		echo "Error occurred."
-		echo "$DESCRIPTION"
+		echo "$RETURN"
 		exit 1
 	fi
-	echo "I'm death"
 	if [ $? -ne 0 ]; then
-		echo "How are you?"
 		exit 1
 	fi
 }
@@ -55,11 +46,9 @@ get_resources () {
 	AVAILABLE_STORAGE=`expr $TOTAL_STORAGE - $USED_STORAGE`
 }
 list_servers () {
-	echo "I'm fine."
 	RESPONSE=`curl -k -s -X GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL"`
 	check_response
 	echo $RESPONSE | jq '.data[] | {SID: .sid, name: .servername, Mode: .mode, IP: .ip, OS: .template, Status: .status, Pass: .rootpass, Host: .hostname}'
-	echo "Thank you."
 
 }
 show_resources () {
