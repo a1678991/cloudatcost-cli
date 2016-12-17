@@ -50,6 +50,11 @@ list_servers () {
 	echo $RESPONSE | jq '.data[] | {SID: .sid, name: .servername, Mode: .mode, IP: .ip, OS: .template, Status: .status, Pass: .rootpass, Host: .hostname}'
 
 }
+list_tasks () {
+	RESPONSE=`curl -k -s -X GET "https://panel.cloudatcost.com/api/v1/listtasks.php?key=$KEY&login=$MAIL&ip_bypass=1"`
+	check_response
+	echo $RESPONSE | jq .
+}
 show_resources () {
         get_resources
         echo "TotalCPU: $TOTAL_CPU UsedCPU: $USED_CPU AvailableCPU: $AVAILABLE_CPU"
@@ -82,11 +87,13 @@ select_server() {
 #done
 
 if [ -z "$OPETYPE" ]; then
-	echo -n "Choose oepration [B]uild/[L]istserver/[D]eleteserver/check[R]esources:/Run[M]ode/Enter[C]onsole :"
+	echo -n "Choose oepration [B]uild/[L]istserver/[D]eleteserver/check[R]esources:/Run[M]ode/list[T]asks/Enter[C]onsole :"
 	read OPETYPE
 fi
 if [ $OPETYPE = "b" ] || [ $OPETYPE = "B" ]; then
 	if [ -z "$OS" ]; then
+		echo -n "Enter DC{1-3}:"
+		read DC
 		echo "OS List"
 		RESPONSE=`curl -k -s "https://panel.cloudatcost.com/api/v1/listtemplates.php?key=$KEY&login=$MAIL&ip_bypass=1"`
 		check_response
@@ -111,7 +118,7 @@ if [ $OPETYPE = "b" ] || [ $OPETYPE = "B" ]; then
 		read STORAGE
 	fi
 
-	RESPONSE=`curl -k -s -X POST https://panel.cloudatcost.com/api/v1/cloudpro/build.php --data "key=$KEY&login=$MAIL&cpu=$CPU&ram=$RAM&storage=$STORAGE&os=$OS&ip_bypass=1"`
+	RESPONSE=`curl -k -s -X POST https://panel.cloudatcost.com/api/v1/cloudpro/build.php --data "key=$KEY&login=$MAIL&datacenter=$DC&cpu=$CPU&ram=$RAM&storage=$STORAGE&os=$OS&ip_bypass=1"`
 	check_status
 	echo $RESPONSE | jq .
 
@@ -138,14 +145,15 @@ elif [ $OPETYPE = "m" ] || [ $OPETYPE = "M" ]; then
 		read MODE
 	fi
 	RESPONSE=`curl -k -s -X POST https://panel.cloudatcost.com/api/v1/runmode.php --data "key=$KEY&login=$MAIL&sid=$SID&mode=$MODE&ip_bypass=1"`
-	echo $RESPONSE | jq
+	echo $RESPONSE | jq .
 elif [ $OPETYPE = "c" ] || [ $OPETYPE = "C" ]; then
 	select_server
 	RESPONSE=`curl -k -X POST https://panel.cloudatcost.com/api/v1/console.php --data "key=$KEY&login=$MAIL&sid=$SID&ip_bypass=1"`
 	check_response
 	echo $RESPONSE | jq .
+elif [ $OPETYPE = "t" ] || [ $OPETYPE = "T" ]; then
+        list_tasks
 fi
-
 
 else
 	echo "Please install jq (https://stedolan.github.io/jq/)"
