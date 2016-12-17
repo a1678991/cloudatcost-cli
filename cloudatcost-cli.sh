@@ -2,7 +2,7 @@
 # !!!! set $MAIL and $KEY !!!!
 
 if [ -z "$MAIL" ] || [ -z "$KEY" ]; then
-        echo "Please set MAIL and KEY!!"
+        echo 'Please set $MAIL and $KEY!!'
         exit
 fi
 if which jq >/dev/null 2>&1; then
