@@ -119,7 +119,7 @@ if [ $OPETYPE = "b" ] || [ $OPETYPE = "B" ]; then
 	fi
 
 	RESPONSE=`curl -k -s -X POST https://panel.cloudatcost.com/api/v1/cloudpro/build.php --data "key=$KEY&login=$MAIL&datacenter=$DC&cpu=$CPU&ram=$RAM&storage=$STORAGE&os=$OS&ip_bypass=1"`
-	check_status
+	check_response
 	echo $RESPONSE | jq .
 
 elif [ $OPETYPE = "l" ] || [ $OPETYPE = "L" ]; then
