@@ -23,4 +23,4 @@ STORAGE              |Storage size (GB)
 
 consoleはAPIがちゃんと返事してくれないので動きません
 
-buildもAPIが壊れているので動きません
+~~buildもAPIが壊れているので動きません~~→復活したみたいです
