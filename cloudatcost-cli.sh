@@ -10,7 +10,7 @@ if which jq >/dev/null 2>&1; then
 check_response ()
 {
 	STATUS=`echo $RESPONSE | jq .status`
-	if [ $STATUS = "error" ]; then
+	if [ "$STATUS" = "error" ]; then
 		echo "Error occurred."
 		echo $RESPONSE | jq .error_description
 		exit 1
@@ -47,7 +47,7 @@ get_resources () {
 list_servers () {
 	RESPONSE=`curl -k -s -X GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL&ip_bypass=1"`
 	check_response
-	echo $RESPONSE | jq '.data[] | {SID: .sid, name: .servername, Mode: .mode, IP: .ip, OS: .template, Status: .status, Pass: .rootpass, Host: .hostname}'
+	echo $RESPONSE | jq '.data[] | {SID: .sid, name: .servername, vmname: .vmname, Mode: .mode, IP: .ip, OS: .template, Status: .status, Pass: .rootpass, Host: .hostname}'
 
 }
 list_tasks () {
@@ -61,12 +61,19 @@ show_resources () {
         echo "TotalRAM: $TOTAL_RAM MB UsedRAM: $USED_RAM MB AvailableRAM: $AVAILABLE_RAM MB"
         echo "TotalSSD: $TOTAL_STORAGE GB UsedSSD: $USED_STORAGE GB AvailableSSD: $AVAILABLE_STORAGE GB"
 }
-select_server() {
+select_server () {
 	list_servers
 	echo -n "Enter server SID :"
 	read SID
 }
-
+list_ip () {
+	select_server
+	curl -k -s "https://panel.cloudatcost.com/panel/_config/pop/ipv4.php?SID=$SID"
+}
+add_ip () {
+	select_server
+	curl "https://panel.cloudatcost.com/panel/_config/pop/ipv4.php?add=yes&SID=$SID" -s | cut -d ">" -f2 | cut -d "<" -f1
+}
 #option
 #while getopts :m:k:l:r:h opt
 #do
@@ -87,7 +94,7 @@ select_server() {
 #done
 
 if [ -z "$OPETYPE" ]; then
-	echo -n "Choose oepration [B]uild/[L]istserver/[D]eleteserver/check[R]esources:/Run[M]ode/list[T]asks/Enter[C]onsole :"
+	echo -n "Choose oepration [B]uild/[L]istserver/[D]eleteserver/check[R]esources:/[P]ower/Run[M]ode/list[T]asks/Enter[C]onsole :"
 	read OPETYPE
 fi
 if [ $OPETYPE = "b" ] || [ $OPETYPE = "B" ]; then
@@ -138,6 +145,13 @@ elif [ $OPETYPE = "d" ] || [ $OPETYPE = "D" ]; then
 	fi
 elif [ $OPETYPE = "r" ] || [ $OPETYPE = "R" ]; then
 	show_resources
+elif [ $OPETYPE = "p" ] || [ $OPETYPE = "P" ]; then
+	select_server
+	echo -n "Action [poweron ,poweroff, reset] :"
+	read ACTION
+	RESPONSE=`curl -k -s -X POST https://panel.cloudatcost.com/api/v1/powerop.php --data "key=$KEY&login=$MAIL&sid=$SID&action=$ACTION&ip_bypass=1"`
+	check_response
+	echo $RESPONSE | jq .
 elif [ $OPETYPE = "m" ] || [ $OPETYPE = "M" ]; then
 	select_server
 	if [ -z "$MODE" ]; then
