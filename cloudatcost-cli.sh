@@ -80,9 +80,9 @@ add_ip () {
 while getopts lrh opt
 do
     case $opt in
-        l)      list_servers
+        l)      OPETYPE=l
                 ;;
-        r)      show_resources
+        r)      OPETYPE=r
                 ;;
         h)      show_usage
                 ;;
