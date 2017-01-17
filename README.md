@@ -14,7 +14,7 @@ Environment variable | Description
 MAIL                 | Mailaddress
 KEY                  | API key
 -------------------- | -----------
-OPETYPE              | Operation type ex. b,r, 
+OPETYPE              | Operation type ex. b,r,
 -------------------- | -----------
 OS                   | Operating system ex. 9,14,42
 CPU                  |CPU size

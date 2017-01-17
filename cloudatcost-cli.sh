@@ -3,31 +3,31 @@
 
 if [ -z "$MAIL" ] || [ -z "$KEY" ]; then
         echo 'Please set $MAIL and $KEY!!'
-        exit
+        exit 1
 fi
 if which jq >/dev/null 2>&1; then
 
 check_response ()
 {
-	STATUS=`echo $RESPONSE | jq .status`
-	if [ "$STATUS" = "error" ]; then
+	STATUS=`echo $RESPONSE | jq .status | cut -d '"' -f 2`
+	if [ $STATUS = error ]; then
 		echo "Error occurred."
 		echo $RESPONSE | jq .error_description
 		exit 1
-	fi
-	if [ $? -ne 0 ]; then
+	else
+		echo "Error"
+		echo $STATUS
+		echo $RESPONSE
 		exit 1
 	fi
 }
-#show_usage ()
-#{
-#    echo "Usage:"
-#    echo "  -m MailAdress"
-#    echo "  -k api key"
-#    echo "  -l list servers"
-#    echo "  -r show resouces"
-#    exit 1
-#}
+show_usage ()
+{
+    echo "Usage:"
+    echo "  -l list servers"
+    echo "  -r show resouces"
+    exit 0
+}
 get_resources () {
 	RESPONSE=`curl -k -s "https://panel.cloudatcost.com/api/v1/cloudpro/resources.php?key=$KEY&login=$MAIL&ip_bypass=1"`
 	check_response
@@ -75,23 +75,19 @@ add_ip () {
 	curl "https://panel.cloudatcost.com/panel/_config/pop/ipv4.php?add=yes&SID=$SID" -s | cut -d ">" -f2 | cut -d "<" -f1
 }
 #option
-#while getopts :m:k:l:r:h opt
-#do
-#    case $opt in
-#        m)      MAIL=$OPTARG
-#                ;;
-#        k)      KEY=$OPTARG
-#                ;;
-#        l)      list_servers && exit 0
-#                ;;
-#        r)      show_resources && exit 0
-#                ;;
-#        h)      show_usage
-#                ;;
-#        \?)     show_usage
-#                ;;
-#        esac
-#done
+while getopts lrh opt
+do
+    case $opt in
+        l)      list_servers
+                ;;
+        r)      show_resources
+                ;;
+        h)      show_usage
+                ;;
+        \?)	break
+                ;;
+        esac
+done
 
 if [ -z "$OPETYPE" ]; then
 	echo -n "Choose oepration [B]uild/[L]istserver/[D]eleteserver/check[R]esources:/[P]ower/Run[M]ode/list[T]asks/Enter[C]onsole :"
@@ -141,6 +137,7 @@ elif [ $OPETYPE = "d" ] || [ $OPETYPE = "D" ]; then
 	fi
 	if [ $CONFIRM = "y" ] || [ $CONFIRM = "Y" ]; then
 		RESPONSE=`curl -k -s -X POST https://panel.cloudatcost.com/api/v1/cloudpro/delete.php --data "key=$KEY&login=$MAIL&sid=$SID&ip_bypass=1"`
+		check_response
 		echo $RESPONSE | jq
 	fi
 elif [ $OPETYPE = "r" ] || [ $OPETYPE = "R" ]; then
@@ -167,6 +164,7 @@ elif [ $OPETYPE = "c" ] || [ $OPETYPE = "C" ]; then
 	echo $RESPONSE | jq .
 elif [ $OPETYPE = "t" ] || [ $OPETYPE = "T" ]; then
         list_tasks
+	echo $RESPONSE
 fi
 
 else
