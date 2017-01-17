@@ -42,8 +42,17 @@ get_resources () {
 	USED_CPU=`echo $USED | jq -r .cpu_used`
 	USED_RAM=`echo $USED | jq -r .ram_used`
 	USED_STORAGE=`echo $USED | jq -r .storage_used`
+	if [ $USED_CPU = null ]; then
+		USED_CPU=0
+	fi
 	AVAILABLE_CPU=`expr $TOTAL_CPU - $USED_CPU`
+	if [ $USED_RAM = null ]; then
+		USED_RAM=0
+	fi
 	AVAILABLE_RAM=`expr $TOTAL_RAM - $USED_RAM`
+	if [ $USED_STORAGE = null ]; then
+		USED_STRAGE=0
+	fi
 	AVAILABLE_STORAGE=`expr $TOTAL_STORAGE - $USED_STORAGE`
 }
 list_servers () {
