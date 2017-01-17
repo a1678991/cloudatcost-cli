@@ -14,6 +14,8 @@ check_response ()
 		echo "Error occurred."
 		echo $RESPONSE | jq .error_description
 		exit 1
+	elif [ $STATUS = ok ]; then
+		echo "Success!!"
 	else
 		echo "Error"
 		echo $STATUS
@@ -166,7 +168,7 @@ elif [ $OPETYPE = "t" ] || [ $OPETYPE = "T" ]; then
         list_tasks
 	echo $RESPONSE
 fi
-
+exit 0
 else
 	echo "Please install jq (https://stedolan.github.io/jq/)"
 fi
