@@ -1,7 +1,7 @@
 # cloudatcost-cli
 ##bash based cloudatcost api client
 
-    $sh cloudatcost.sh -h
+    $sh cloudatcost.sh -h
 
 ### Require jq(https://stedolan.github.io/jq/)  
 Package will be available in major distribution
