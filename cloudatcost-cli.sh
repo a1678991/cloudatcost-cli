@@ -9,12 +9,12 @@ if which jq >/dev/null 2>&1; then
 
 check_response ()
 {
-	STATUS=`echo $RESPONSE | jq .status | cut -d '"' -f 2`
-	if [ $STATUS = error ]; then
+	STATUS=`echo $RESPONSE | jq .status`
+	if [ $STATUS = "\"error\"" ]; then
 		echo "Error occurred."
 		echo $RESPONSE | jq .error_description
 		exit 1
-	elif [ $STATUS = ok ]; then
+	elif [ $STATUS = "\"ok\"" ]; then
 		echo "Success!!"
 	else
 		echo "Error"
