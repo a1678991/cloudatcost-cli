@@ -64,7 +64,7 @@ get_resources () {
 list_servers () {
 	RESPONSE=`curl -s -X GET "https://panel.cloudatcost.com/api/v1/listservers.php?key=$KEY&login=$MAIL&ip_bypass=1"`
 	check_response
-	echo $RESPONSE | jq '.data[] | {SID: .sid, name: .servername, vmname: .vmname, Mode: .mode, IP: .ip, OS: .template, Status: .status, Pass: .rootpass, Host: .hostname}'
+	echo $RESPONSE | jq '.data[] | {SID: .sid, name: .servername, vmname: .vmname, Mode: .mode, Status: .status, IP: .ip, OS: .template, CPU: .cpu, RAM: .ram, SSD: .storage, "Creation date": .sdate, Pass: .rootpass, Host: .hostname}'
 
 }
 list_tasks () {
@@ -99,6 +99,8 @@ do
                 ;;
         r)      OPETYPE=r
                 ;;
+	d)	OPETYPE=d
+		;;
         h)      show_usage
                 ;;
         \?)	break

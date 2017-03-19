@@ -99,6 +99,8 @@ do
                 ;;
         r)      OPETYPE=r
                 ;;
+	d)	OPETYPE=d
+		;;
         h)      show_usage
                 ;;
         \?)	break
@@ -176,6 +178,7 @@ elif [ $OPETYPE = "m" ] || [ $OPETYPE = "M" ]; then
 	echo $RESPONSE | jq .
 elif [ $OPETYPE = "c" ] || [ $OPETYPE = "C" ]; then
 	select_server
+		jq 
 	RESPONSE=`curl -s -X POST https://panel.cloudatcost.com/api/v1/console.php --data "key=$KEY&login=$MAIL&sid=$SID"`
 	check_response
 	echo $RESPONSE | jq .
