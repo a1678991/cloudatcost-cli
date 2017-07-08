@@ -183,9 +183,9 @@ elif [ $OPETYPE = "c" ] || [ $OPETYPE = "C" ]; then
 	echo $RESPONSE | jq .
 elif [ $OPETYPE = "t" ] || [ $OPETYPE = "T" ]; then
         list_tasks
-	echo $RESPONSE
 fi
 exit 0
 else
 	echo "Please install jq (https://stedolan.github.io/jq/)"
+	exit 1
 fi
