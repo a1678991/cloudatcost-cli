@@ -1,3 +1,5 @@
+# The cloudatcost API has been discontinued.
+
 # cloudatcost-cli
 ##bash based cloudatcost api client
 
